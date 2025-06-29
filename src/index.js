@@ -11,6 +11,7 @@ function init() {
   document
     .getElementById("closeModal")
     .addEventListener("click", createModal.close);
+  window.modalOpen = createModal.open;
   const grid = createGrid();
   grid.render(podcasts);
 }

@@ -16,9 +16,10 @@ export const createGrid = () => {
      */
     render(podcastList) {
       container.innerHTML = "";
-      podcastList.forEach((p) => {
-        const card = createPodcastCard(p, createModal.open);
-        container.appendChild(card);
+      podcastList.forEach((podcast) => {
+        const preview = document.createElement("podcast-preview");
+        preview.data = podcast;
+        container.appendChild(preview);
       });
     },
   };

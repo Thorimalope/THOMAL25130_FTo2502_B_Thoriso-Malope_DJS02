@@ -1,15 +1,13 @@
-/*import { GenreService } from "./src/utils/GenreService.js";*/
+import { GenreService } from "./src/utils/GenreService.js";
 import { DateUtils } from "./src/utils/DateUtils.js";
-/*import { podcasts } from "./data.js";*/
 
-
-
+console.log("this page is linked");
 
 
 const template = document.createElement("template");
 
 template.innerHTML = `
-< style >
+<style>
 
     .card {
     background: white;
@@ -58,26 +56,48 @@ template.innerHTML = `
     color: var(--grey-text);
     }
 
-</style >
+</style>
 
-<div class="card">
-   <img src="${podcast.image}" alt="${podcast.title} cover"/>
-    <h3>${podcast.title}</h3>
-    <p>${podcast.seasons} season${podcast.seasons > 1 ? "s" : ""}</p>
-    <div class="tags">${genreNames
-      .map((g) => `<span class="tag">${g}</span>`)
-      .join("")}</div>
-    <p class="updated-text">${DateUtils.format(podcast.updated)}</p>
-</div>
+ <div class="card">
+    <img class="poster" />
+    <h3 class="title"></h3>
+    <p class="season-count"></p>
+    <div class="tags"></div>
+    <p class="updated-text"></p>
+  </div>
 `
 
 
 class podcastPreview extends HTMLElement{
     constructor() {
         super();
-        const shadowDom = this.attachShadow({ mode: "open" });
-        shadowDom.append(template.content.cloneNode(true))
-        this.innerHTML
+        this.shadow = this.attachShadow({ mode: "open" });
+    }
+
+    set data(podcast) {
+        this.podcast = podcast;
+
+        const clone = template.content.cloneNode(true);
+
+        clone.querySelector(".poster").src = podcast.image;
+        clone.querySelector(".poster").alt = `${podcast.title} cover`;
+        clone.querySelector(".title").textContent = podcast.title;
+        clone.querySelector(".season-count").textContent = `${podcast.seasons} season${podcast.seasons > 1 ? "s" : ""}`;
+        clone.querySelector(".tags").innerHTML = GenreService.getNames(podcast.genres)
+            .map((g) => `<span class="tag">${g}</span>`)
+            .join("");
+        clone.querySelector(".updated-text").textContent = DateUtils.format(podcast.updated);
+
+        this.shadow.innerHTML = "";
+        this.shadow.appendChild(clone);
+    }
+
+    connectedCallback() {
+        this.shadow.addEventListener("click", () => {
+            if (this.podcast && window.modalOpen) {
+                window.modalOpen(this.podcast);
+            }
+        });
     }
 }
 
